@@ -1,0 +1,20 @@
+import numpy as np
+import pandas as pd
+import joblib
+
+df = pd.read_csv("data/US_Accidents.csv")
+
+features = [
+    "Temperature(F)",
+    "Humidity(%)",
+    "Wind_Speed(mph)",
+    "Visibility(mi)",
+    "Pressure(in)"
+]
+
+X = df[features].dropna().sample(200, random_state=42)
+
+scaler = joblib.load("scaler.pkl")
+X_scaled = scaler.transform(X)
+
+np.save("background.npy", X_scaled)
