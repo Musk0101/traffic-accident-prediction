@@ -23,11 +23,7 @@ public class TrafficController {
     }
 
     public static class TrafficRequest {
-        // Add request fields as needed, example:
-        // public String location;
-        // public int hour;
-        // public TrafficRequest() {}
-        // Getters/setters can be added if required by deserialization
+        
     }
 }
 
