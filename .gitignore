@@ -1,7 +1,10 @@
+
 venv/
 --pycache__/
 node_modules/
 .env
 *.pyc
 .DS_Store
-
+.h5
+.csv
+.pkl
