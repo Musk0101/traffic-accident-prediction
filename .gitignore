@@ -8,3 +8,7 @@ node_modules/
 
 
 
+ml-model/data/US_Accidents.csv
+ml-model/data/*.csv
+ml-model/*.pth
+ml-model/*.pkl
