@@ -20,11 +20,11 @@ df = pd.read_csv("data/US_Accidents.csv")
 
 # ⚠️ MUST MATCH TRAINING ORDER
 features = [
-    "Temperature(F)",     # temperature
-    "Humidity(%)",        # humidity
-    "Wind_Speed(mph)",    # wind_speed
-    "Visibility(mi)",     # visibility
-    "Pressure(in)"        # pressure
+    "Temperature(F)",
+    "Humidity(%)",
+    "Pressure(in)",
+    "Visibility(mi)",
+    "Wind_Speed(mph)"
 ]
 
 df = df[features].dropna()
