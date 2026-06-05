@@ -4,5 +4,5 @@ numpy
 joblib
 requests
 scikit-learn
-torch --index-url https://download.pytorch.org/whl/cpu
 pydantic
+torch --index-url https://download.pytorch.org/whl/cpu
