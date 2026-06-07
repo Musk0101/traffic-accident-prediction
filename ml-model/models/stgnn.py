@@ -1,36 +1,30 @@
 import torch
-import torch.nn.functional as F
-from torch.nn import GRU, Linear
-from torch_geometric.nn import GATConv
+import torch.nn as nn
 
-class STGNN(torch.nn.Module):
-    def __init__(self, in_channels, hidden_channels, T=5):
+class GATConv(nn.Module):
+    """Simple GAT-like layer using pure PyTorch — no torch_geometric needed."""
+    def __init__(self, in_channels, out_channels):
         super().__init__()
-
-        self.T = T
-
-        self.gat1 = GATConv(in_channels, hidden_channels)
-        self.gat2 = GATConv(hidden_channels, hidden_channels)
-
-        self.gru = GRU(hidden_channels, hidden_channels, batch_first=True)
-        self.fc = Linear(hidden_channels, 1)
+        self.linear = nn.Linear(in_channels, out_channels)
+        self.attn   = nn.Linear(2 * out_channels, 1)
+        self.act    = nn.ELU()
 
     def forward(self, x, edge_index):
-        """
-        x: [N, F]  (PyTorch Geometric standard)
-        """
+        x = self.linear(x)
+        row, col = edge_index
+        alpha = torch.sigmoid(self.attn(torch.cat([x[row], x[col]], dim=-1)))
+        out = torch.zeros_like(x)
+        out.scatter_add_(0, row.unsqueeze(-1).expand_as(x[col]), alpha * x[col])
+        return self.act(out + x)
 
-        N, F_in = x.shape
+class STGNN(nn.Module):
+    def __init__(self, in_channels, hidden_channels):
+        super().__init__()
+        self.conv1 = GATConv(in_channels, hidden_channels)
+        self.conv2 = GATConv(hidden_channels, hidden_channels)
+        self.fc    = nn.Linear(hidden_channels, 1)
 
-        # ---- Spatial encoding ----
-        h = F.relu(self.gat1(x, edge_index))
-        h = F.relu(self.gat2(h, edge_index))  # [N, hidden]
-
-        # ---- Fake temporal sequence ----
-        h_seq = h.unsqueeze(1).repeat(1, self.T, 1)  # [N, T, hidden]
-
-        # ---- Temporal modeling ----
-        _, h_final = self.gru(h_seq)  # [1, N, hidden]
-
-        out = torch.sigmoid(self.fc(h_final.squeeze(0)))  # [N, 1]
-        return out.mean()  # graph-level prediction
+    def forward(self, x, edge_index):
+        x = self.conv1(x, edge_index)
+        x = self.conv2(x, edge_index)
+        return torch.sigmoid(self.fc(x))
