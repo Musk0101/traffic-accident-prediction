@@ -142,8 +142,8 @@ This project is developed as an academic and practical implementation of Artific
 
 B.Tech – Computer Science and Engineering
 
-GitHub: Add your GitHub profile link here
 
 ---
 
-⭐ If you find this project interesting, don't forget to star the repository!
+
+
